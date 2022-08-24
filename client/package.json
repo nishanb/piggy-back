@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "net": "^1.0.2",
+    "net-socket-reconnect": "^0.0.9",
     "ws": "^8.8.1"
   }
 }

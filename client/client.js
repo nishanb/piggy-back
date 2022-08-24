@@ -18,32 +18,11 @@ ws.onmessage = (data) => {
 };
 
 ws.onclose = (data) => {
-    console.log("Closing connection with server " + Object.keys(data));
-    wsStream.unpipe(clientSocket);
-    wsStream.destroy();
+    console.log("Closing connection with server ");
 };
 
-// var clientSocket = new Socket();
-// clientSocket.setKeepAlive(true);
-
-// clientSocket.on("data", (data) => {
-//     console.log("TCP : Read");
-// });
-
-// // Add a 'close' event handler for the client socket
-// clientSocket.on("close", function (e) {
-//     console.log("socket closed ");
-// });
-
-// clientSocket.connect("80", "localhost", function () {
-//     console.log("Connected localhost:80 ");
-//     //wsStream.pipe(clientSocket).pipe(wsStream);
-//     clientSocket.write("Test")
-// });  
-
-
-var reconnect = require('net-socket-reconnect')
-var clientSocket = reconnect({ port: 80, reconnectInterval: 150 })
+var clientSocket = new Socket();
+clientSocket.setKeepAlive(true);
 
 clientSocket.on("data", (data) => {
     console.log("TCP : Read");
@@ -56,6 +35,9 @@ clientSocket.on("close", function (e) {
 
 clientSocket.connect("80", "localhost", function () {
     console.log("Connected localhost:80 ");
-    //wsStream.pipe(clientSocket).pipe(wsStream);
-    clientSocket.write("Test")
-});  
+    wsStream.pipe(clientSocket).pipe(wsStream);
+});
+
+clientSocket.on('error', (err) => {
+    console.log(err)
+})
