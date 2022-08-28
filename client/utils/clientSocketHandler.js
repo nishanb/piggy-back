@@ -13,8 +13,17 @@ const connect = (host, port) => {
         console.log("Closing socket connection, Reason : TCP RESET");
     });
 
-    clientSocket.on("error", (err) => {
-        console.log(err);
+    clientSocket.on("error", async (err) => {
+        if (err.code == "ECONNRESET") {
+            await socketStream.connect(port, host, function () {
+                console.log("Failed to connect socket, Retrying to connect ");
+            });
+        } else if (err.code == "ECONNREFUSED") {
+            console.log(`Unable to connect to ${host}:${port}, is your site running ?`);
+            process.exit(0);
+        } else {
+            console.log(err);
+        }
     });
 
     clientSocket.on("close", function (e) {
@@ -22,6 +31,6 @@ const connect = (host, port) => {
     });
 
     return clientSocket;
-}
+};
 
 module.exports.connectToSocket = connect;

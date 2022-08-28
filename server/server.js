@@ -1,16 +1,18 @@
 const WebSocket = require("ws");
 const net = require("net");
-const wss = new WebSocket.Server({ port: 8080 });
+
+const wss = new WebSocket.Server({ port: 8080 }, () => {
+    console.log("WS Server is up and ready to accept connection");
+});
 
 wss.on("connection", async (ws, req) => {
-
-    const clientAddress = req.socket.remoteAddress + ":" + req.socket.remotePort
-    console.log("New Client Connected IP : " + clientAddress);
+    const clientAddress = req.socket.remoteAddress + ":" + req.socket.remotePort;
+    console.log(clientAddress + " Connected");
 
     const webSocketStream = await WebSocket.createWebSocketStream(ws);
 
     ws.on("message", (message) => {
-        console.log("TCP : Recived ");
+        console.log("TCP : Recive");
         console.log(message);
     });
 
@@ -20,8 +22,8 @@ wss.on("connection", async (ws, req) => {
     });
 
     ws.on("close", (data) => {
-        console.log("WS Client Disconnected");
-        console.log("Closing tcp listner at " + server.address());
+        console.log(clientAddress + " Disconnected");
+        console.log("Closing TCP listner at " + server.address());
         server.close();
     });
 
@@ -31,7 +33,6 @@ wss.on("connection", async (ws, req) => {
             keepAlive: true,
         },
         async (serverSocket) => {
-
             serverSocket.on("data", (data) => {
                 console.log("TCP Sent " + serverSocket.remoteAddress + serverSocket.remotePort);
             });
