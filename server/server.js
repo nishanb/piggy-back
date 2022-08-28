@@ -1,12 +1,13 @@
 const WebSocket = require("ws");
 const net = require("net");
-
 const wss = new WebSocket.Server({ port: 8080 });
 
-wss.on("connection", async (ws) => {
+wss.on("connection", async (ws, req) => {
 
-    console.log("Client connected at wss");
-    webSocketStream = await WebSocket.createWebSocketStream(ws);
+    const clientAddress = req.socket.remoteAddress + ":" + req.socket.remotePort
+    console.log("New Client Connected IP : " + clientAddress);
+
+    const webSocketStream = await WebSocket.createWebSocketStream(ws);
 
     ws.on("message", (message) => {
         console.log("TCP : Recived ");
@@ -14,8 +15,14 @@ wss.on("connection", async (ws) => {
     });
 
     ws.on("ping", () => {
-        console.log("WS -> Pong " + new Date().toLocaleString())
+        console.log("WS -> Pong " + new Date().toLocaleString() + " " + clientAddress);
         ws.pong();
+    });
+
+    ws.on("close", (data) => {
+        console.log("WS Client Disconnected");
+        console.log("Closing tcp listner at " + server.address());
+        server.close();
     });
 
     //create socket to read & write pipe
@@ -24,35 +31,33 @@ wss.on("connection", async (ws) => {
             keepAlive: true,
         },
         async (serverSocket) => {
-            serverSocket.on("end", () => {
-                console.log("Socket disconnected");
-            });
 
             serverSocket.on("data", (data) => {
                 console.log("TCP Sent " + serverSocket.remoteAddress + serverSocket.remotePort);
-                console.log(data);
             });
 
             serverSocket.on("error", (err) => {
-                console.log("Error" + err);
+                console.log("Server socket Error " + err);
+            });
+
+            serverSocket.on("end", () => {
+                console.log("Server socket disconnected");
+            });
+
+            serverSocket.on("end", () => {
+                console.log("Server socket closed");
             });
 
             serverSocket.pipe(webSocketStream).pipe(serverSocket);
         }
     );
 
-    ws.on("close", (data) => {
-        console.log("WS Client Disconnected");
-        console.log("Closing tcp listner at " + server.address().port);
-        server.close();
-    });
-
     server.on("error", (err) => {
-        console.log("err" + err);
+        console.log("Server err " + err);
     });
 
     server.listen(8081, () => {
         console.log("Starting tcp listener at " + server.address().port);
-        ws.send("WS-NOTIFY,Starting tcp listener at " + server.address().address + ":" + server.address().port);
+        ws.send("WS-NOTIFY,Starting tcp listener at " + "localhost" + ":" + server.address().port);
     });
 });

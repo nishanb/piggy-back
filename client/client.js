@@ -19,7 +19,7 @@ ws.onclose = (data) => {
 
 // WS ping to keep stream alive every 4s
 setInterval(() => {
-    if (ws.OPEN) {
+    if (!ws.destroyed) {
         console.log("WS -> Ping " + new Date().toLocaleString())
         ws.ping()
     }

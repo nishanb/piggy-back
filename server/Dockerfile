@@ -10,4 +10,4 @@ RUN npm i
 
 COPY . .
 
-CMD ["node","main.js"]
+CMD ["node","server.js"]
