@@ -6,11 +6,11 @@ Piggy Back Tunnel is a reverse TCP tunnel over WebSocket to host local sites in 
 - Make available your local development sites in the cloud.
 - Test webhook calls to local sites.
 
-## How it's built
-- 
+## How it works 
+![image](https://user-images.githubusercontent.com/21797317/193886882-ed3f5775-c812-4148-bab6-3767c47ff9a2.png)
 
 ## Installation
-- 
+- TBD
 
 ## Usage
 ```sh
