@@ -7,7 +7,7 @@ Piggy Back Tunnel is a reverse TCP tunnel over WebSocket to host local sites in 
 - Test webhook calls to local sites.
 
 ## How it works 
-![image](https://user-images.githubusercontent.com/21797317/193886882-ed3f5775-c812-4148-bab6-3767c47ff9a2.png)
+![image](https://user-images.githubusercontent.com/21797317/195246981-b8550e05-bf4c-4d39-a424-42160bd4c2d9.png)
 
 ## Installation
 - TBD
