@@ -31,6 +31,7 @@ const connect = (host, port) => {
     clientSocket.on("close", function (e) {
         if (e == false) {
             console.log(chalk.green("socket closed due to incactivity"));
+            return;
         }
         console.log(chalk.red("Client socket closed"));
     });

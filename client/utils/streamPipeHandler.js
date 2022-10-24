@@ -3,9 +3,10 @@ const chalk = require('chalk');
 const pipe = async (socketStream, wsStream, host, port) => {
 
     // Data piping operation
-    socketStream.on("data", (data) => {
+    socketStream.on("data", async (data) => {
         console.log("<<= Data on Socket Stream =>>");
         console.log(data);
+        await socketStream.readyState == "open";
         wsStream.write(data);
     });
 
@@ -23,6 +24,7 @@ const pipe = async (socketStream, wsStream, host, port) => {
             console.log(chalk.green(data));
             return;
         }
+
         console.log(chalk.bgBlue.green(data));
         socketStream.write(data);
     });

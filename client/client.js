@@ -4,7 +4,7 @@ const { pipe } = require("./utils/streamPipeHandler");
 
 const url = "ws://localhost:8080/http-stream";
 const localHost = "localhost";
-const localPort = 8081;
+const localPort = 8085;
 
 // Connect to WS Stream
 const wsStream = getWsStream(url);
