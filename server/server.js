@@ -1,29 +1,24 @@
 const WebSocket = require("ws");
 const net = require("net");
 
-const wss = new WebSocket.Server({ port: 8080 }, () => {
+const wss = new WebSocket.Server({ port: 8080, path: '/http-stream' }, () => {
     console.log("WS Server is up and ready to accept connection");
 });
 
 wss.on("connection", async (ws, req) => {
     const clientAddress = req.socket.remoteAddress + ":" + req.socket.remotePort;
-    console.log(clientAddress + " Connected");
-
     const webSocketStream = await WebSocket.createWebSocketStream(ws);
+    console.log(clientAddress + " Connected & WS stream established");
 
-    ws.on("message", (message) => {
-        console.log("TCP : Recive");
-        console.log(message);
-    });
-
+    //hearbeat check 
     ws.on("ping", () => {
-        console.log("WS -> Pong " + new Date().toLocaleString() + " " + clientAddress);
-        ws.pong();
+        //console.log("WS -> Pong " + new Date().toLocaleString() + " " + clientAddress);
+        //ws.pong();
     });
 
     ws.on("close", (data) => {
-        console.log(clientAddress + " Disconnected");
-        console.log("Closing TCP listner at " + server.address());
+        console.log(clientAddress + " Disconnected from WS");
+        console.log("Closing TCP listner at " + server.address().address + ":" + server.address().port);
         server.close();
     });
 
@@ -33,23 +28,17 @@ wss.on("connection", async (ws, req) => {
             keepAlive: true,
         },
         async (serverSocket) => {
-            serverSocket.on("data", (data) => {
-                console.log("TCP Sent " + serverSocket.remoteAddress + serverSocket.remotePort);
-            });
-
             serverSocket.on("error", (err) => {
-                console.log("Server socket Error " + err);
+                console.log("Server socket connection Error ==> " + err);
             });
 
             serverSocket.on("end", () => {
-                console.log("Server socket disconnected");
+                console.log("Server socket connection disconnected");
             });
 
             serverSocket.on("end", () => {
-                console.log("Server socket closed");
+                console.log("Server socket connection closed");
             });
-
-            serverSocket.pipe(webSocketStream).pipe(serverSocket);
         }
     );
 
@@ -57,8 +46,22 @@ wss.on("connection", async (ws, req) => {
         console.log("Server err " + err);
     });
 
-    server.listen(8081, () => {
+    server.on("connection", (serverSocket) => {
+        console.log("Recived new connection ");
+
+        serverSocket.on("data", (data) => {
+            console.log("<<= TCP Sent =>> ");
+            webSocketStream.write(data)
+        });
+
+        webSocketStream.on('data', (data) => {
+            console.log("<<= TCP Recive =>> ");
+            serverSocket.write(data);
+        })
+    });
+
+    server.listen(0, () => {
         console.log("Starting tcp listener at " + server.address().port);
-        ws.send("WS-NOTIFY,Starting tcp listener at " + "localhost" + ":" + server.address().port);
+        ws.send("WS-NOTIFY, Starting tcp listener at " + "http://localhost" + ":" + server.address().port);
     });
 });

@@ -1,8 +1,11 @@
+const chalk = require('chalk');
+
 const pipe = async (socketStream, wsStream, host, port) => {
 
     // Data piping operation
     socketStream.on("data", (data) => {
         console.log("<<= Data on Socket Stream =>>");
+        console.log(data);
         wsStream.write(data);
     });
 
@@ -12,14 +15,15 @@ const pipe = async (socketStream, wsStream, host, port) => {
         // reconnect to socket
         if (socketStream.readyState == "closed" || socketStream.destroyed) {
             await socketStream.connect(port, host, function () {
-                console.log("Re Connecting to " + host + ":" + port);
+                console.log("Reconnected to " + host + ":" + port);
             });
         }
 
         if (data.includes("WS-NOTIFY")) {
-            console.log(data);
+            console.log(chalk.green(data));
             return;
         }
+        console.log(chalk.bgBlue.green(data));
         socketStream.write(data);
     });
 

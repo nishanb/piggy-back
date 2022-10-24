@@ -2,9 +2,9 @@ const { getWsStream } = require("./utils/wsStreamHandler");
 const { connectToSocket } = require("./utils/clientSocketHandler");
 const { pipe } = require("./utils/streamPipeHandler");
 
-const url = "ws://localhost:8080";
+const url = "ws://localhost:8080/http-stream";
 const localHost = "localhost";
-const localPort = 80;
+const localPort = 8081;
 
 // Connect to WS Stream
 const wsStream = getWsStream(url);
