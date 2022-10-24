@@ -1,17 +1,15 @@
 const chalk = require('chalk');
 
 const pipe = async (socketStream, wsStream, host, port) => {
-
     // Data piping operation
     socketStream.on("data", async (data) => {
-        console.log("<<= Data on Socket Stream =>>");
-        console.log(data);
+        console.debug(`TCP Read  ${host}:${port} -> <remote>`);
         await socketStream.readyState == "open";
         wsStream.write(data);
     });
 
     wsStream.on("data", async (data) => {
-        console.log("<<= Data on WS Stream =>> ");
+        console.debug(`TCP Write <remote> -> ${host}:${port}`);
 
         // reconnect to socket
         if (socketStream.readyState == "closed" || socketStream.destroyed) {
@@ -25,10 +23,9 @@ const pipe = async (socketStream, wsStream, host, port) => {
             return;
         }
 
-        console.log(chalk.bgBlue.green(data));
+        //console.log(chalk.bgBlue.green(data));
         socketStream.write(data);
     });
-
 }
 
 module.exports.pipe = pipe;

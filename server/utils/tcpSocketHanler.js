@@ -3,11 +3,13 @@ const net = require("net");
 const createSocketServer = () => {
     const server = net.createServer(
         {
-            keepAlive: true,
+            keepAlive: false,
+
         },
         async (serverSocket) => {
             serverSocket.on("error", (err) => {
                 console.log("Server socket connection Error ==> " + err);
+                serverSocket.destroy();
             });
 
             serverSocket.on("end", () => {

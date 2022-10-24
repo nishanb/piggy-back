@@ -19,20 +19,20 @@ const handleStream = async (wss, serverSocket) => {
             console.log(`Recived new connection  ${serverSocketSocket.address().family}-${serverSocketSocket.address().address}:${serverSocketSocket.address().port}`);
 
             serverSocketSocket.on("data", async (data) => {
-                console.debug(`TCP Sent  ${serverSocketSocket.address().address}:${serverSocketSocket.address().port} -> ${req.socket.localAddress}:${req.socket.localPort}`);
-                await webSocketStream.readyState == "open";
+                console.debug(`TCP Write  ${serverSocketSocket.address().address}:${serverSocketSocket.address().port} -> ${req.socket.localAddress}:${req.socket.localPort}`);
+                await ws.readyState == 1;
                 webSocketStream.write(data)
             });
 
             webSocketStream.on('data', async (data) => {
-                console.debug(`TCP Recived ${req.socket.localAddress}:${req.socket.localPort} -> ${serverSocketSocket.localAddress}:${serverSocketSocket.localPort}`);
+                console.debug(`TCP Read ${req.socket.localAddress}:${req.socket.localPort} -> ${serverSocketSocket.localAddress}:${serverSocketSocket.localPort}`);
                 await serverSocketSocket.readyState == "open";
                 serverSocketSocket.write(data);
             })
         });
 
         // prepare listening connection 
-        serverSocket.listen(0, () => {
+        serverSocket.listen(8083, () => {
             console.log("Starting tcp listener at " + serverSocket.address().port);
             ws.send("WS-NOTIFY, Starting tcp listener at " + "http://localhost" + ":" + serverSocket.address().port);
         });
