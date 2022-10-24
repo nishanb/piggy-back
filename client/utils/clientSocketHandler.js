@@ -1,4 +1,5 @@
 const Socket = require("net").Socket;
+const chalk = require('chalk');
 
 // Socket connecting to consumer site
 const connect = (host, port) => {
@@ -6,20 +7,21 @@ const connect = (host, port) => {
     clientSocket.setKeepAlive(true);
 
     clientSocket.connect(port, host, function () {
-        console.log(`Connected ${host}:${port}`);
+        console.log(chalk.green(`Connected ${host}:${port}`));
     });
 
     clientSocket.on("end", function (e) {
-        console.log("Closing socket connection, Reason : TCP RESET");
+        console.log(chalk.red(`Closing socket connection to ${host}:${port}`));
     });
 
     clientSocket.on("error", async (err) => {
         if (err.code == "ECONNRESET") {
-            await socketStream.connect(port, host, function () {
-                console.log("Failed to connect socket, Retrying to connect ");
+            await clientSocket.connect(port, host, function () {
+                console.log(chalk.blue("Failed to connect socket, Retrying to connect .."));
             });
+
         } else if (err.code == "ECONNREFUSED") {
-            console.log(`Unable to connect to ${host}:${port}, is your site running ?`);
+            console.log(chalk.red(`Unable to connect to ${host}:${port}, is your application running ?`));
             process.exit(0);
         } else {
             console.log(err);
@@ -27,7 +29,10 @@ const connect = (host, port) => {
     });
 
     clientSocket.on("close", function (e) {
-        console.log("socket closed ");
+        if (e == false) {
+            console.log(chalk.green("socket closed due to incactivity"));
+        }
+        console.log(chalk.red("Client socket closed"));
     });
 
     return clientSocket;
