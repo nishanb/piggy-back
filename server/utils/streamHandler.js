@@ -1,4 +1,5 @@
 const WebSocket = require("ws");
+var ip = require("ip");
 
 const handleStream = async (wss, serverSocket) => {
 
@@ -34,7 +35,7 @@ const handleStream = async (wss, serverSocket) => {
         // prepare listening connection 
         serverSocket.listen(8083, () => {
             console.log("Starting tcp listener at " + serverSocket.address().port);
-            ws.send("WS-NOTIFY, Starting tcp listener at " + "http://localhost" + ":" + serverSocket.address().port);
+            ws.send("WS-NOTIFY, Starting tcp listener at " + ip.address() + ":" + serverSocket.address().port);
         });
     });
 }
