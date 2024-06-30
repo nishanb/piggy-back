@@ -18,20 +18,22 @@ Piggy Back Tunnel is a reverse TCP tunnel over WebSocket to host local sites in 
 ```sh
 git clone git@github.com:nishanb/piggy-back.git
 
-cd server && npm i
+npm i server
 
-cd client && npm i
+npm i client
+
+npm i
+
+npm i -g
 ```
 
 ## Usage
 ```sh
 # on server side which has public network 
-cd server 
-node server.js
+piggyback serve 
 
-# on client side which has private network , make required config in client.js before running 
-cd client 
-node main.js connect localhost 8090
+# on client side which has private network
+piggyback forward -h localhost -p 8090
 ```
 
 ## Contributing

@@ -1,0 +1,20 @@
+{
+  "name": "piggy-back",
+  "version": "1.0.0",
+  "description": "Piggy Back Tunnel is a reverse TCP tunnel over WebSocket to host local sites in the cloud",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "bin": {
+    "piggyback": "main.js"
+  },
+  "author": "nishanb",
+  "license": "ISC",
+  "dependencies": {
+    "client": "^0.0.1",
+    "commander": "^12.1.0",
+    "conf": "^13.0.1",
+    "server": "^1.0.39"
+  }
+}
