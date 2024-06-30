@@ -31,7 +31,7 @@ node server.js
 
 # on client side which has private network , make required config in client.js before running 
 cd client 
-node client.js
+node main.js connect localhost 8090
 ```
 
 ## Contributing
