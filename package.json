@@ -12,9 +12,13 @@
   "author": "nishanb",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.2",
     "client": "^0.0.1",
     "commander": "^12.1.0",
     "conf": "^13.0.1",
-    "server": "^1.0.39"
+    "ip": "^2.0.1",
+    "net": "^1.0.2",
+    "server": "^1.0.39",
+    "ws": "^8.17.1"
   }
 }
