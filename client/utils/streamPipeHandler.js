@@ -3,7 +3,7 @@ const chalk = require('chalk');
 const pipe = async (socketStream, wsStream, host, port) => {
     // Data piping operation
     socketStream.on("data", async (data) => {
-        console.debug(`TCP Read  ${host}:${port} -> <remote>`);
+        console.debug(`TCP Read ${host}:${port} -> <remote>`);
         await socketStream.readyState == "open";
         wsStream.write(data);
     });
