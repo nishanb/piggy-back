@@ -6,22 +6,21 @@ const createSocketServer = () => {
             keepAlive: true,
         },
         async (serverSocket) => {
-            serverSocket.on("error", (err) => {
-                console.log("Server socket connection Error ==> " + err);
+            serverSocket.on("error", (error) => { // Changed 'err' to 'error' for consistency
+                console.error(new Date().toISOString(), "TCP Client Socket Error:", error);
             });
 
-            serverSocket.on("end", () => {
-                console.log("Server socket connection disconnected");
+            serverSocket.on("end", () => { // Kept one 'end' handler
+                console.log(new Date().toISOString(), "TCP Client Socket disconnected/ended.");
             });
 
-            serverSocket.on("end", () => {
-                console.log("Server socket connection closed");
-            });
+            // Removed duplicate "end" handler. 
+            // The "close" event might be more specific if needed: serverSocket.on("close", (hadError) => { ... });
         }
     );
 
-    server.on("error", (err) => {
-        console.log("Server err " + err);
+    server.on("error", (error) => { // Changed 'err' to 'error'
+        console.error(new Date().toISOString(), "TCP Server Error:", error);
     });
 
     return server;
