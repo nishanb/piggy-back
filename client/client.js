@@ -1,20 +1,22 @@
-const { getWsStream } = require("./utils/wsStreamHandler");
-const { connectToSocket } = require("./utils/clientSocketHandler");
-const { pipe } = require("./utils/streamPipeHandler");
+const { connectWs } = require("./utils/wsStreamHandler");
+const { wireUp } = require("./utils/streamPipeHandler");
+const { Dashboard } = require("../shared/ui");
 
-const url = "ws://localhost:8080/http-stream";
+const DEFAULT_SERVER = "ws://localhost:8080/http-stream";
 
-const forwardTraffic = (localHost, localPort) => {
-    // Connect to WS Stream
-    const wsStream = getWsStream(url);
+const forwardTraffic = (localHost, localPort, serverUrl = DEFAULT_SERVER, opts = {}) => {
+  const dashboard = opts.quiet
+    ? null
+    : new Dashboard("client", {
+        Server: serverUrl,
+        Forwarding: `${localHost}:${localPort}`,
+      });
+  if (dashboard) dashboard.start();
 
-    //Connect to localsocekt
-    const clientSocket = connectToSocket(localHost, localPort);
+  const ws = connectWs(serverUrl, dashboard, {
+    onOpen: () => wireUp(ws, localHost, localPort, dashboard),
+  });
+  return ws;
+};
 
-    //pipe tcp & websocket streams
-    pipe(clientSocket, wsStream, localHost, localPort);
-
-    return { clientSocket, wsStream }
-}
-
-module.exports.forwardTraffic = forwardTraffic
+module.exports.forwardTraffic = forwardTraffic;

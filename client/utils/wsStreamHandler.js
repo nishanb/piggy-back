@@ -1,33 +1,40 @@
 const WebSocket = require("ws");
-const chalk = require('chalk');
 
-const getWsStream = (wsUrl) => {
-    const ws = new WebSocket(wsUrl);
+// Connect to the piggyback server. Returns the raw WebSocket (binary mode).
+const connectWs = (wsUrl, dashboard, { onOpen, onMessage, onClose } = {}) => {
+  const ws = new WebSocket(wsUrl, { perMessageDeflate: false });
+  ws.binaryType = "nodebuffer";
 
-    ws.onopen = () => {
-        console.log(chalk.greenBright("Connected to WebSocket serever"));
-    };
+  ws.on("open", () => {
+    if (dashboard) {
+      dashboard.setStatus("online");
+      dashboard.event(`connected to ${wsUrl}`, "open");
+    }
+    if (onOpen) onOpen(ws);
+  });
 
-    ws.onerror = (error) => {
-        console.log("Failed to connect with WS server" + error.message)
-        process.exit(0)
-    };
+  ws.on("message", (data) => {
+    if (onMessage) onMessage(data);
+  });
 
-    ws.onclose = (data) => {
-        console.log("Closing connection WebSocket with server " + data.reason);
-    };
+  ws.on("error", (err) => {
+    if (dashboard) dashboard.event(`websocket error: ${err.message}`, "error");
+  });
 
-    // WS ping to keep stream alive every 4s
-    setInterval(() => {
-        if (!ws.destroyed) {
-            //console.log(chalk.blue("WS -> Ping " + new Date().toLocaleString()));
-            ws.ping();
-        }
-    }, 2 * 1000);
+  ws.on("close", (code, reason) => {
+    if (dashboard) {
+      dashboard.setStatus("offline");
+      dashboard.event(`websocket closed (${code}) ${reason || ""}`, "close");
+    }
+    if (onClose) onClose(code, reason);
+  });
 
-    let wsStream = WebSocket.createWebSocketStream(ws, { encoding: "utf8" });
+  const ping = setInterval(() => {
+    if (ws.readyState === ws.OPEN) ws.ping();
+  }, 15000);
+  ws.on("close", () => clearInterval(ping));
 
-    return wsStream;
+  return ws;
 };
 
-module.exports.getWsStream = getWsStream;
+module.exports.connectWs = connectWs;

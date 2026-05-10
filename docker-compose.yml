@@ -1,11 +1,23 @@
-version: '3'
 services:
+  # Local app the client will tunnel to.
   web-app:
     image: kennethreitz/httpbin
-  client:
-    build: 
-      context: './client'
-      dockerfile : 'Dockerfile'
+    expose:
+      - "80"
+
+  # Public-facing piggyback server.
+  piggy-server:
+    build: .
+    command: ["serve", "-p", "8080", "-t", "9000"]
+    ports:
+      - "18080:8080"   # WebSocket control port (host:container)
+      - "19000:9000"   # Tunnel TCP port — external HTTP requests come here
+
+  # Private-side piggyback client, forwards web-app:80 over the tunnel.
+  piggy-client:
+    build: .
+    command: ["forward", "-h", "web-app", "-p", "80", "-s", "ws://piggy-server:8080/http-stream"]
     depends_on:
-     - web-app
-    restart: always
+      - web-app
+      - piggy-server
+    restart: on-failure
